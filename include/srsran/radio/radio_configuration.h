@@ -43,7 +43,9 @@ struct clock_sources {
     /// Use external source.
     EXTERNAL,
     /// Use GPSDO.
-    GPSDO
+    GPSDO,
+    /// For bladeRF specifically
+    REF_IN
   };
 
   /// Synchronization source selection.
@@ -151,6 +153,9 @@ inline clock_sources::source to_clock_source(const std::string& str)
   }
   if (str == "default") {
     return clock_sources::source::DEFAULT;
+  }
+  if (str == "ref_in") {
+    return clock_sources::source::REF_IN;
   }
   report_error("Invalid clock/sync source '{}'.", str);
 }

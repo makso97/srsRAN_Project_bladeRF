@@ -255,6 +255,9 @@ public:
       case radio_configuration::clock_sources::source::GPSDO:
         clock_src = "gpsdo";
         break;
+      case radio_configuration::clock_sources::source::REF_IN:
+        clock_src = "ref_in";
+        break;
     }
 
     // Convert sync source to string.
@@ -270,23 +273,20 @@ public:
       case radio_configuration::clock_sources::source::GPSDO:
         sync_src = "gpsdo";
         break;
+      case radio_configuration::clock_sources::source::REF_IN:
+        sync_src = "ref_in";
+        break;
     }
 
     logger.debug("Setting PPS source to '{}' and clock source to '{}'.", sync_src, clock_src);
 #if UHD_VERSION < 3140099
     return safe_execution([this, &sync_src, &clock_src]() {
-      std::vector<std::string> time_sources = usrp->get_time_sources(0);
-      if (std::find(time_sources.begin(), time_sources.end(), sync_src) == time_sources.end()) {
-        on_error("Invalid time source {}. Supported: {}", sync_src, span<const std::string>(time_sources));
-        return;
-      }
       std::vector<std::string> clock_sources = usrp->get_clock_sources(0);
       if (std::find(clock_sources.begin(), clock_sources.end(), clock_src) == clock_sources.end()) {
         on_error("Invalid clock source {}. Supported: {}", clock_src, span<const std::string>(clock_sources));
         return;
       }
 
-      usrp->set_time_source(sync_src);
       usrp->set_clock_source(clock_src);
     });
 #else
